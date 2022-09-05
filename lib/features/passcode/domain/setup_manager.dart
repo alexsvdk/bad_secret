@@ -1,19 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../services/navigation.dart';
 import '../../../utils/hash_util.dart';
 import '../data/repository.dart';
 import '../models/state.dart';
 import 'manager.dart';
 
 class PasscodeScreenSetupManager extends PasscodeScreenManager {
-  static final provider = Provider(
-    (ref) => PasscodeScreenSetupManager(ref.watch(PasscoreRepository.provider)),
+  static final provider = StateNotifierProvider.autoDispose<
+      PasscodeScreenManager, PasscodeScreenState>(
+    (ref) => PasscodeScreenSetupManager._(
+      ref.watch(PasscoreRepository.provider),
+      ref.watch(NavigationService.provider),
+    ),
   );
 
   final PasscoreRepository _repository;
+  final NavigationService _navigationService;
 
-  PasscodeScreenSetupManager(this._repository)
-      : super(const PasscodeScreenState(title: 'Придумайте код'));
+  PasscodeScreenSetupManager._(
+    this._repository,
+    this._navigationService,
+  ) : super(
+          const PasscodeScreenState(title: 'Придумайте код'),
+        );
 
   @override
   void onSymbolTap(String symbol) {
@@ -25,8 +35,9 @@ class PasscodeScreenSetupManager extends PasscodeScreenManager {
     }
   }
 
-  void _saveCode() {
+  void _saveCode() async {
     final hash = HashUtil.hashPasscode(state.input);
-    _repository.setHash(hash);
+    await _repository.setHash(hash);
+    await _navigationService.maybePop();
   }
 }

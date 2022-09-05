@@ -5,8 +5,8 @@ import '../models/state.dart';
 
 abstract class PasscodeScreenManager
     extends StateNotifier<PasscodeScreenState> {
-  static final provider =
-      StateNotifierProvider<PasscodeScreenManager, PasscodeScreenState>(
+  static final provider = StateNotifierProvider.autoDispose<
+      PasscodeScreenManager, PasscodeScreenState>(
     (ref) => throw UnimplementedError('Provider must be overriden'),
   );
 
